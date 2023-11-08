@@ -9,8 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ChevronsLeftRight } from 'lucide-react'
+import { ChevronsLeftRight, Moon } from 'lucide-react'
 import { SignOutButton, useUser } from '@clerk/clerk-react'
+import { Button } from '@/components/ui/button'
 
 export const UserItem = () => {
   const { user } = useUser()
@@ -61,7 +62,12 @@ export const UserItem = () => {
           asChild
           className="w-full cursor-pointer text-muted-foreground"
         >
-          <SignOutButton>Log Out</SignOutButton>
+          <SignOutButton>
+            <div className="flex">
+              <Moon className="mr-1 h-4 w-4" />
+              Sign Out
+            </div>
+          </SignOutButton>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
