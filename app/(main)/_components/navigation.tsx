@@ -25,6 +25,8 @@ import { Item } from './item'
 import { toast } from 'sonner'
 import { DocumentList } from './document-list'
 import { TrashBox } from './trash-box'
+import { useSearch } from '@/hooks/use-search'
+import { useSettings } from '@/hooks/use-settings'
 
 export const Navigation = () => {
   const pathname = usePathname()
@@ -35,6 +37,8 @@ export const Navigation = () => {
   const [isResetting, setIsResetting] = useState<boolean>(false)
   const [isColapsed, setIsColapsed] = useState<boolean>(!!isMobile)
   const create = useMutation(api.documents.create)
+  const search = useSearch()
+  const settings = useSettings()
 
   useEffect(() => {
     if (isMobile) {
@@ -142,8 +146,8 @@ export const Navigation = () => {
         </div>
         <div>
           <UserItem />
-          <Item label="Search" icon={Search} isSearch onClick={() => {}} />
-          <Item label="Settings" icon={Settings} onClick={() => {}} />
+          <Item label="Search" icon={Search} isSearch onClick={search.onOpen} />
+          <Item label="Settings" icon={Settings} onClick={settings.onOpen} />
           <Item onClick={handleCreate} label="New page" icon={PlusCircle} />
         </div>
         <div className="mt-4">

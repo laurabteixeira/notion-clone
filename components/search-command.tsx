@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/command'
 import { useSearch } from '@/hooks/use-search'
 import { api } from '@/convex/_generated/api'
-import { Query } from 'convex/server'
 
 export const SearchCommand = () => {
   const { user } = useUser()
