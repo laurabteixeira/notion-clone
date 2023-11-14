@@ -146,7 +146,7 @@ export const Item = ({
             >
               <DropdownMenuItem
                 onClick={onArchive}
-                className="focus:bg-destructive focus:text-white"
+                className="focus:bg-rose-500 focus:text-white"
               >
                 <Trash className="h-4 w-4 mr-2" />
                 Delete
