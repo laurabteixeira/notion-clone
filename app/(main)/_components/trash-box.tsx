@@ -10,6 +10,12 @@ import { Search, Trash2, Undo } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 export const TrashBox = () => {
   const router = useRouter()
@@ -17,14 +23,29 @@ export const TrashBox = () => {
   const documents = useQuery(api.documents.getTrash)
   const restore = useMutation(api.documents.restore)
   const remove = useMutation(api.documents.remove)
+  const removeAll = useMutation(api.documents.removeAll)
   const [search, setSearch] = useState('')
 
   const filteredDocuments = documents?.filter((document) => {
     return document.title.toLowerCase().includes(search.toLowerCase())
   })
+  const archivedDocuments =
+    documents?.filter((document) => {
+      return document.isArchived === true
+    }) ?? []
 
   const onClick = (documentId: string) => {
     router.push(`/documents/${documentId}`)
+  }
+
+  const onRemoveAll = () => {
+    const promise = removeAll()
+
+    toast.promise(promise, {
+      loading: 'Deleting all notes...',
+      success: 'Notes deleted!',
+      error: 'Failed to delete notes.',
+    })
   }
 
   const onRestore = (
@@ -67,13 +88,30 @@ export const TrashBox = () => {
   return (
     <div className="text-sm">
       <div className="flex items-center gap-x-1 p-2">
-        <Search h-4 w-4 />
+        <Search className="h-5 w-5" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-7 px-2 focus-visible:ring-transparent bg-secondary"
           placeholder="Filter by page title..."
         />
+        {archivedDocuments?.length >= 2 && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <ConfirmModal onConfirm={onRemoveAll}>
+                  <div
+                    role="button"
+                    className="rounded-sm p-2 hover:bg-neutral-200"
+                  >
+                    <Trash2 className="h-4 w-4 text-rose-500" />
+                  </div>
+                </ConfirmModal>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Delete all</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
       </div>
       <div className="mt-2 px-1 bg-1">
         <p className="hidden last:block text-xs text-center text-muted-foreground pb-2">

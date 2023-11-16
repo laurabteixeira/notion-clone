@@ -1,8 +1,6 @@
-import { convexToJson, v } from 'convex/values'
+import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 import { Doc, Id } from './_generated/dataModel'
-import { promises } from 'dns'
-import { threadId } from 'worker_threads'
 
 export const archive = mutation({
   args: {
@@ -168,14 +166,6 @@ export const restore = mutation({
           q.eq('userId', userId).eq('parentDocument', documentId),
         )
         .collect()
-
-      // for (const child of children) {
-      //   await ctx.db.patch(child._id, {
-      //     isArchived: false,
-      //   })
-
-      //   await recursiveRestore(child._id)
-      // }
 
       children.map(async (child) => {
         await ctx.db.patch(child._id, {
@@ -384,5 +374,39 @@ export const removeCoverImage = mutation({
     })
 
     return document
+  },
+})
+
+export const removeAll = mutation({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+
+    if (!identity) {
+      throw new Error('Not authenticated')
+    }
+
+    const userId = identity.subject
+
+    const archivedDocuments = await ctx.db
+      .query('documents')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .filter((q) => q.eq(q.field('isArchived'), true))
+      .collect()
+
+    if (!archivedDocuments) {
+      throw new Error('No archived documents to delete')
+    }
+
+    archivedDocuments.map(async (document) => {
+      if (document.userId === userId) {
+        await ctx.db.delete(document._id)
+      } else {
+        throw new Error('Unauthorized')
+      }
+    })
+
+    const documents = await Promise.all(archivedDocuments)
+
+    return documents
   },
 })
