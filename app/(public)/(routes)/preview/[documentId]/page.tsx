@@ -55,16 +55,17 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
 
   return (
     <div className="pb-40">
-      <Cover url={document.coverImage} />
+      <Cover preview url={document.coverImage} />
       <div className="md:max-w-3xl lg:md-max-w-4xl mx-auto">
-        <Toolbar initialData={document} />
-        <Editor onChange={onChange} initialContent={document.content} />
+        <Toolbar preview initialData={document} />
+        <Editor
+          editable={false}
+          onChange={onChange}
+          initialContent={document.content}
+        />
       </div>
     </div>
   )
 }
 
 export default DocumentIdPage
-
-//
-// A folder named in [] is a dynamic folder that can be whatever ID inside "documents" folder (for this example). If we remove the square brackets, it is going to be a normal route with the name "documentId".
